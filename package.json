@@ -1,0 +1,55 @@
+{
+    "name": "quantum-strike",
+    "version": "1.0.1",
+    "description": "Quantum Strike - Ultimate Space Combat Simulator",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build:win": "electron-builder --win",
+        "build:mac": "electron-builder --mac",
+        "build:linux": "electron-builder --linux"
+    },
+    "devDependencies": {
+        "electron": "^27.1.0",
+        "electron-builder": "^24.6.4"
+    },
+    "build": {
+        "appId": "com.quantumstrike.game",
+        "productName": "Quantum Strike",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "**/*",
+            "!node_modules/.cache",
+            "!dist",
+            "!build"
+        ],
+        "win": {
+            "target": [
+                "nsis",
+                "portable"
+            ]
+        },
+        "mac": {
+            "target": [
+                "dmg",
+                "zip"
+            ],
+            "category": "public.app-category.games"
+        },
+        "linux": {
+            "target": [
+                "AppImage",
+                "deb"
+            ],
+            "category": "Game"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true
+        }
+    }
+}

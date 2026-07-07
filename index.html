@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quantum Strike - Ultimate Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Canvas -->
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- GUI Overlay -->
+    <div id="gui-overlay">
+        <!-- Main Menu -->
+        <div id="main-menu" class="gui-panel">
+            <div class="menu-header">
+                <div class="gui-title">QUANTUM STRIKE</div>
+                <div style="color: #80c0ff; font-size: 14px; margin-top: 5px;">Ultimate Space Combat Simulator</div>
+                <div style="color: #ffaa00; font-size: 12px; margin-top: 3px;" id="menu-level">Level 1</div>
+                <div style="margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <span style="color: #80c0ff; font-size: 13px;">Player: <span id="menu-username-display">Guest</span></span>
+                    <span id="menu-rank" style="font-size: 14px; font-weight: 600; color: #888888;">Recruit</span>
+                    <span id="menu-rank-progress" style="font-size: 11px; color: #4488ff;">Next: Soldier (0%)</span>
+                </div>
+            </div>
+            <div class="menu-section">
+                <h3>Player Settings</h3>
+                <div style="margin-bottom: 10px;">
+                    <span class="gui-label">Username</span>
+                    <input type="text" id="username-input" class="gui-input" placeholder="Enter your name" maxlength="20">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <span class="gui-label">Difficulty</span>
+                    <select id="difficulty-select" class="gui-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="insane">Insane</option>
+                        <option value="nightmare">Nightmare</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <span class="gui-label">Map Size</span>
+                    <select id="mapsize-select" class="gui-select">
+                        <option value="small">Small (2000x2000)</option>
+                        <option value="medium" selected>Medium (4000x4000)</option>
+                        <option value="large">Large (8000x8000)</option>
+                        <option value="huge">Huge (12000x12000)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <span class="gui-label">Keybinds</span>
+                    <div class="keybind-row"><label>Primary Fire</label><input id="kb-primary" value="Space" maxlength="10"><span class="key-status" id="kb-primary-status">✓</span></div>
+                    <div class="keybind-row"><label>Secondary Fire</label><input id="kb-secondary" value="KeyQ" maxlength="10"><span class="key-status" id="kb-secondary-status">✓</span></div>
+                    <div class="keybind-row"><label>Auto-Cannon Toggle</label><input id="kb-autocannon" value="KeyR" maxlength="10"><span class="key-status" id="kb-autocannon-status">✓</span></div>
+                    <div class="keybind-row"><label>Launch Drones</label><input id="kb-drones" value="KeyF" maxlength="10"><span class="key-status" id="kb-drones-status">✓</span></div>
+                    <div class="keybind-row"><label>Thrust</label><input id="kb-thrust" value="KeyW" maxlength="10"><span class="key-status" id="kb-thrust-status">✓</span></div>
+                    <div class="keybind-row"><label>Reverse</label><input id="kb-reverse" value="KeyS" maxlength="10"><span class="key-status" id="kb-reverse-status">✓</span></div>
+                    <div class="keybind-row"><label>Rotate Left</label><input id="kb-left" value="KeyA" maxlength="10"><span class="key-status" id="kb-left-status">✓</span></div>
+                    <div class="keybind-row"><label>Rotate Right</label><input id="kb-right" value="KeyD" maxlength="10"><span class="key-status" id="kb-right-status">✓</span></div>
+                    <div class="keybind-row"><label>Ability</label><input id="kb-ability" value="KeyE" maxlength="10"><span class="key-status" id="kb-ability-status">✓</span></div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <span class="gui-label">Qubits</span>
+                    <span class="gui-value" id="qubits-display">0 Q</span>
+                </div>
+            </div>
+            <div class="menu-section">
+                <h3>Quick Actions</h3>
+                <button class="gui-button" onclick="GUI.openStore()" style="width:100%;margin-bottom:10px;">Store & Customization</button>
+                <button class="gui-button" onclick="GUI.showUpgradeMenu()" style="width:100%;margin-bottom:10px;">Ship Upgrades</button>
+                <button class="gui-button" onclick="GUI.showMultiplayerMenu()" style="width:100%;margin-bottom:10px;">LAN Multiplayer</button>
+                <button class="gui-button" onclick="GUI.showCredits()" style="width:100%;margin-bottom:10px;">Credits</button>
+                <button class="gui-button primary" onclick="GUI.quickPlay()" style="width:100%;">Launch Game</button>
+                <button class="gui-button" onclick="resetProgress()" style="width:100%;margin-top:10px;background:rgba(255,0,0,0.2);border-color:rgba(255,0,0,0.3);">Reset Progress</button>
+            </div>
+            <div class="game-modes">
+                <div class="mode-card" onclick="GUI.startGame('explore')"><div class="mode-icon">.</div><div class="mode-name">Free Roam</div><div class="mode-desc">Explore the galaxy</div></div>
+                <div class="mode-card" onclick="GUI.startGame('survival')"><div class="mode-icon">.</div><div class="mode-name">Survival</div><div class="mode-desc">Fight endless waves</div></div>
+                <div class="mode-card" onclick="GUI.startGame('boss')"><div class="mode-icon">.</div><div class="mode-name">Boss Hunt</div><div class="mode-desc">Hunt powerful foes</div></div>
+                <div class="mode-card" onclick="GUI.startGame('horde')"><div class="mode-icon">.</div><div class="mode-name">Horde Mode</div><div class="mode-desc">Massive enemy waves</div></div>
+            </div>
+        </div>
+        
+        <!-- Store Panel -->
+        <div id="store-panel" class="gui-panel" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <div class="gui-title" style="font-size:20px;">Store & Customization</div>
+                <button class="gui-button" onclick="GUI.closeStore()">Close</button>
+            </div>
+            <div style="margin-bottom:15px;"><span class="gui-value" id="store-qubits">0 Q</span> available | Level: <span id="store-level">1</span></div>
+            <div class="store-section"><h3>Ships</h3><div class="store-grid" id="store-grid"></div></div>
+            <div class="store-section"><h3>Primary Weapons</h3><div class="store-grid" id="weapon-grid"></div></div>
+            <div class="store-section"><h3>Secondary Weapons</h3><div class="store-grid" id="secondary-grid"></div></div>
+            <div class="store-section"><h3>Auto-Cannons</h3><div class="store-grid" id="autocannon-grid"></div></div>
+            <div class="store-section"><h3>Drone Bay (Carrier Only)</h3><div class="store-grid" id="drone-grid"></div></div>
+            <div class="store-section"><h3>Attachments</h3><div class="store-grid" id="attachment-grid"></div></div>
+            <div class="store-section"><h3>Accessories</h3><div class="store-grid" id="accessory-grid"></div></div>
+        </div>
+        
+        <!-- Game HUD -->
+        <div id="game-hud">
+            <div class="hud-top">
+                <div class="hud-panel">
+                    <div style="color:#00ffff;font-weight:600;font-family:'Orbitron',sans-serif;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                        <span>SHIP STATUS</span>
+                        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                            <span id="hud-username" style="color:#ffaa00;font-size:12px;">Guest</span>
+                            <span id="hud-rank" style="font-size:13px;font-weight:600;color:#888888;">Recruit</span>
+                            <span id="hud-rank-progress" style="font-size:10px;color:#4488ff;">Next: Soldier (0%)</span>
+                            <span id="multiplayer-status-display" style="font-size:10px;color:#888888;">Offline</span>
+                        </div>
+                    </div>
+                    <div class="hp-bar"><div class="hp-fill" id="player-hp" style="width:100%;"></div></div>
+                    <div class="xp-bar"><div class="xp-fill" id="player-xp" style="width:0%;"></div></div>
+                    <div style="color:#80c0ff;font-size:11px;">Shield: <span id="player-shield">OFF</span> | Speed: <span id="player-speed">100%</span> | Level: <span id="player-level">1</span></div>
+                    
+                    <!-- Primary Weapon with Cooldown -->
+                    <div style="color:#ff0;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:2px;margin-bottom:2px;">
+                        <span>Primary: <span id="player-weapon">Laser Cannon</span></span>
+                        <span id="primary-cooldown" style="font-size:10px;color:#44ff44;font-weight:600;">Ready</span>
+                    </div>
+                    
+                    <!-- Secondary Weapon with Cooldown -->
+                    <div style="color:#f80;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:2px;margin-bottom:2px;">
+                        <span>Secondary: <span id="player-secondary">None</span></span>
+                        <span id="secondary-cooldown" style="font-size:10px;color:#666;font-weight:600;">-</span>
+                    </div>
+                    
+                    <div style="color:#ffcc00;font-size:11px;">Auto-Cannons: <span id="player-autocannon">None</span> <span id="auto-status" class="auto-status auto-off">OFF</span></div>
+                    <div style="color:#00ffcc;font-size:11px;">Drones: <span id="drone-count" class="drone-count">0</span> <span id="drone-status" style="color:#80c0ff;font-size:10px;">(Press F to launch)</span></div>
+                    <div style="color:#0ff;font-size:11px;">Attachments: <span id="player-attachments">None</span></div>
+                    <div id="player-powerups" style="margin-top:5px;font-size:16px;"></div>
+                </div>
+                <div class="hud-panel">
+                    <div style="color:#00ffff;font-weight:600;font-family:'Orbitron',sans-serif;">MISSION</div>
+                    <div style="color:#fff;font-size:14px;" id="mission-info">Free Roam</div>
+                    <div style="color:#80c0ff;font-size:12px;">Score: <span id="score-display">0</span> | Kills: <span id="kills-display">0</span></div>
+                    <div style="color:#ff0;font-size:12px;">Enemies: <span id="enemy-count">0</span> | Qubits: <span id="hud-qubits">0</span></div>
+                    <div style="color:#f80;font-size:11px;">Combo: <span id="combo-display">x1</span></div>
+                    <div style="margin-top:8px;">
+                        <span style="color:#00ffcc;font-size:11px;">Drone Command:</span>
+                        <button class="drone-command-btn active" data-cmd="attack" onclick="Game.setDroneCommand('attack')">Attack</button>
+                        <button class="drone-command-btn" data-cmd="defend" onclick="Game.setDroneCommand('defend')">Defend</button>
+                        <button class="drone-command-btn" data-cmd="clear" onclick="Game.setDroneCommand('clear')">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Minimap -->
+        <div id="minimap-container"><canvas id="minimap-canvas" width="180" height="180"></canvas></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/input.js"></script>
+    <script src="js/utils/save.js"></script>
+    <script src="js/data/ships.js"></script>
+    <script src="js/data/weapons.js"></script>
+    <script src="js/data/autocannons.js"></script>
+    <script src="js/data/secondary.js"></script>
+    <script src="js/data/drones.js"></script>
+    <script src="js/data/attachments.js"></script>
+    <script src="js/data/accessories.js"></script>
+    <script src="js/data/upgrades.js"></script>
+    <script src="js/audio/AudioEngine.js"></script>
+    <script src="js/game/asteroid.js"></script>
+    <script src="js/game/powerup.js"></script>
+    <script src="js/game/enemy.js"></script>
+    <script src="js/game/drone.js"></script>
+    
+    <!-- Player Modules -->
+    <script src="js/game/player/PlayerCore.js"></script>
+    <script src="js/game/player/PlayerMovement.js"></script>
+    <script src="js/game/player/PlayerStatus.js"></script>
+    <script src="js/game/player/PlayerCombat.js"></script>
+    <script src="js/game/player/PlayerDrones.js"></script>
+    <script src="js/game/player/PlayerBullets.js"></script>
+    <script src="js/game/player/PlayerDrawing.js"></script>
+    <script src="js/game/player/index.js"></script>
+    
+    <script src="js/game/bullet.js"></script>
+    
+    <!-- Game Modules -->
+    <script src="js/game/GameCore.js"></script>
+    <script src="js/game/GameInit.js"></script>
+    <script src="js/game/GameLoop.js"></script>
+    <script src="js/game/GameInput.js"></script>
+    <script src="js/game/GameCollisions.js"></script>
+    <script src="js/game/index.js"></script>
+    
+    <script src="js/ui/minimap.js"></script>
+    <script src="js/ui/store.js"></script>
+    <script src="js/ui/hud.js"></script>
+    <script src="js/ui/gui.js"></script>
+    
+    <!-- Network Modules -->
+    <script src="js/network/client.js"></script>
+    <script src="js/network/multiplayer.js"></script>
+    <script src="js/network/sync.js"></script>
+    
+    <!-- Admin Panel -->
+    <script src="js/admin.js"></script>
+    
+    <!-- Main Entry -->
+    <script src="js/main.js"></script>
+</body>
+</html>

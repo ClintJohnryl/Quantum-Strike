@@ -1,0 +1,475 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Orbitron', Arial, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    background: #000;
+}
+
+#gui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.gui-panel {
+    background: linear-gradient(135deg, rgba(10, 15, 25, 0.95), rgba(20, 30, 50, 0.9));
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 150, 255, 0.1);
+    pointer-events: auto;
+    position: absolute;
+    color: #e0f0ff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.gui-panel:hover {
+    border-color: rgba(0, 200, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 150, 255, 0.2);
+}
+
+.gui-button {
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.2), rgba(0, 255, 200, 0.1));
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    color: #c0f0ff;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    outline: none;
+}
+
+.gui-button:hover {
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.4), rgba(0, 255, 200, 0.2));
+    border-color: rgba(0, 255, 200, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.3);
+}
+
+.gui-button.primary {
+    background: linear-gradient(135deg, rgba(0, 255, 200, 0.3), rgba(0, 200, 255, 0.2));
+    border-color: rgba(0, 255, 200, 0.5);
+    color: #fff;
+}
+
+.gui-input {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 6px;
+    color: #00ffff;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+.gui-input:focus {
+    border-color: rgba(0, 255, 200, 0.6);
+}
+
+.gui-select {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 6px;
+    color: #c0f0ff;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.gui-select option {
+    background: #0a1520;
+    color: #c0f0ff;
+}
+
+.gui-label {
+    color: #80c0ff;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.gui-title {
+    color: #00ffff;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    letter-spacing: 2px;
+    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+}
+
+.gui-value {
+    color: #00ffcc;
+    font-weight: 600;
+}
+
+#main-menu {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 950px;
+    max-width: 95vw;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+.menu-header {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 200, 255, 0.2);
+}
+
+.menu-section {
+    padding: 15px;
+}
+
+.menu-section h3 {
+    color: #00ffff;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.game-modes {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.mode-card {
+    background: rgba(0, 30, 60, 0.5);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-card:hover {
+    background: rgba(0, 50, 100, 0.5);
+    border-color: rgba(0, 255, 200, 0.5);
+    transform: translateY(-3px);
+}
+
+.mode-card .mode-icon { font-size: 32px; margin-bottom: 10px; }
+.mode-card .mode-name { font-weight: 600; color: #00ffff; margin-bottom: 5px; }
+.mode-card .mode-desc { font-size: 12px; color: #80c0ff; }
+
+#store-panel {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 950px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 25px;
+}
+
+.store-section { margin-bottom: 20px; }
+.store-section h3 {
+    color: #00ffff;
+    margin-bottom: 10px;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(0, 200, 255, 0.2);
+    padding-bottom: 5px;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.ship-card, .weapon-card, .attachment-card, .accessory-card {
+    background: rgba(0, 20, 40, 0.6);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.ship-card.selected, .weapon-card.equipped, .attachment-card.equipped, .accessory-card.equipped {
+    border-color: rgba(0, 255, 200, 0.6);
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+    background: rgba(0, 50, 100, 0.4);
+}
+
+.ship-preview { width: 80px; height: 80px; margin: 0 auto 10px; }
+.attachment-preview {
+    width: 60px; height: 60px; margin: 0 auto 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.ship-class-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 3px;
+}
+
+.class-light { background: rgba(0, 200, 255, 0.3); color: #00ccff; }
+.class-medium { background: rgba(255, 200, 0, 0.3); color: #ffcc00; }
+.class-heavy { background: rgba(255, 50, 50, 0.3); color: #ff4444; }
+.class-superheavy { background: rgba(255, 0, 200, 0.3); color: #ff44cc; }
+.class-carrier { background: rgba(0, 255, 200, 0.3); color: #00ffcc; }
+
+#game-hud {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.hud-panel {
+    background: rgba(0, 15, 30, 0.85);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    backdrop-filter: blur(5px);
+    pointer-events: auto;
+}
+
+.hp-bar { width: 200px; height: 8px; background: rgba(255, 0, 0, 0.3); border-radius: 4px; overflow: hidden; margin: 5px 0; }
+.hp-fill { height: 100%; background: linear-gradient(90deg, #00ff00, #00cc00); transition: width 0.3s ease; }
+.xp-bar { width: 200px; height: 6px; background: rgba(0, 100, 255, 0.3); border-radius: 3px; overflow: hidden; margin: 3px 0; }
+.xp-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #00ccff); transition: width 0.3s ease; }
+
+#minimap-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 5;
+    display: none;
+}
+
+#minimap-canvas {
+    border-radius: 50%;
+    border: 2px solid rgba(0, 200, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+}
+
+.keybind-row { display: flex; align-items: center; gap: 10px; margin: 5px 0; }
+.keybind-row label { width: 120px; color: #80c0ff; }
+.keybind-row input {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 4px;
+    color: #00ffff;
+    padding: 4px 8px;
+    width: 100px;
+    text-align: center;
+}
+.keybind-row .key-status { color: #ffaa00; font-size: 12px; margin-left: 10px; }
+
+.rarity-common { color: #888888; }
+.rarity-uncommon { color: #44ff44; }
+.rarity-rare { color: #4488ff; }
+.rarity-epic { color: #aa44ff; }
+.rarity-legendary { color: #ffaa00; }
+.rarity-mythic { color: #ff44ff; }
+.rarity-text { font-size: 10px; text-transform: uppercase; font-weight: 600; }
+
+.weapon-slot-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 2px;
+    background: rgba(0, 0, 0, 0.4);
+}
+.slot-primary { color: #00ffff; border: 1px solid #00ffff; }
+.slot-secondary { color: #ff8800; border: 1px solid #ff8800; }
+.slot-autocannon { color: #ffcc00; border: 1px solid #ffcc00; }
+.slot-carrier { color: #00ffcc; border: 1px solid #00ffcc; }
+
+.auto-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 3px;
+}
+.auto-on { background: rgba(0, 255, 0, 0.2); color: #00ff00; }
+.auto-off { background: rgba(255, 0, 0, 0.2); color: #ff4444; }
+
+.drone-count { font-size: 11px; color: #00ffcc; }
+
+.drone-command-btn {
+    background: rgba(0, 255, 200, 0.15);
+    border: 1px solid rgba(0, 255, 200, 0.3);
+    border-radius: 6px;
+    color: #00ffcc;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    pointer-events: auto;
+    margin: 2px;
+}
+.drone-command-btn:hover { background: rgba(0, 255, 200, 0.3); }
+.drone-command-btn.active {
+    background: rgba(0, 255, 200, 0.3);
+    border-color: #00ffcc;
+    box-shadow: 0 0 15px rgba(0, 255, 200, 0.2);
+}
+
+/* Rank display styles - no icons */
+#hud-rank {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.3);
+    text-shadow: 0 0 10px currentColor;
+}
+
+#hud-rank-progress {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.2);
+}
+
+#menu-rank {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.3);
+    text-shadow: 0 0 15px currentColor;
+}
+
+#menu-rank-progress {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.2);
+}
+
+#menu-username-display {
+    color: #ffaa00;
+    font-weight: 600;
+}
+
+/* Rank color themes - no icons */
+.rank-recruit { color: #888888; border-color: #888888; }
+.rank-soldier { color: #44ff44; border-color: #44ff44; }
+.rank-defender { color: #4488ff; border-color: #4488ff; }
+.rank-veteran { color: #aa44ff; border-color: #aa44ff; }
+.rank-elite { color: #ff8800; border-color: #ff8800; }
+.rank-commander { color: #ff4444; border-color: #ff4444; }
+.rank-champion { color: #ffaa00; border-color: #ffaa00; }
+.rank-legendary { color: #ff44ff; border-color: #ff44ff; }
+.rank-cosmic { color: #00ffcc; border-color: #00ffcc; }
+.rank-transcendent { color: #ffdd00; border-color: #ffdd00; }
+
+/* Mobile controls - hidden (desktop only) */
+#mobile-controls {
+    display: none !important;
+}
+
+/* Admin panel styles */
+#admin-panel button:hover {
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.2);
+}
+#admin-panel button:active {
+    transform: scale(0.98);
+}
+
+@keyframes adminFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes adminFadeOut {
+    from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+#admin-panel::-webkit-scrollbar {
+    width: 6px;
+}
+#admin-panel::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.3);
+    border-radius: 3px;
+}
+#admin-panel::-webkit-scrollbar-thumb {
+    background: #ffaa00;
+    border-radius: 3px;
+}
+
+/* Version footer */
+.version-footer {
+    position: fixed;
+    bottom: 8px;
+    right: 15px;
+    color: rgba(255,255,255,0.15);
+    font-size: 10px;
+    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+    z-index: 1;
+    pointer-events: none;
+    letter-spacing: 1px;
+}
